@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP:RP — Site-19 Loading Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            background-color: #040608;
+            color: #ffffff;
+        }
+
+        /* Background Slideshow */
+        .slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            will-change: opacity, transform;
+            transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            animation: cinematicDrift 10s ease-out forwards;
+        }
+
+        @keyframes cinematicDrift {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.04) translate(-0.5%, -0.5%); }
+            100% { transform: scale(1.07) translate(0.5%, 0.5%); }
+        }
+
+        /* Atmospheric Overlays */
+        .overlay-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background: radial-gradient(circle at center, rgba(8, 12, 18, 0.35) 0%, rgba(4, 6, 9, 0.85) 75%, rgba(2, 3, 5, 0.98) 100%);
+            pointer-events: none;
+        }
+
+        .overlay-scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        /* Content Container */
+        .content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 45px 65px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeInDown 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .foundation-badge {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .foundation-logo {
+            width: 62px;
+            height: 62px;
+            filter: drop-shadow(0 0 14px rgba(0, 210, 255, 0.7));
+            animation: pulseGlow 3.5s infinite alternate;
+        }
+
+        .foundation-meta h3 {
+            font-size: 14px;
+            letter-spacing: 5px;
+            color: #00d2ff;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 3px;
+            text-shadow: 0 0 12px rgba(0, 210, 255, 0.6);
+        }
+
+        .foundation-meta p {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #8da2b3;
+            text-transform: uppercase;
+        }
+
+        .header-tags {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .map-badge {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            padding: 9px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            letter-spacing: 2.5px;
+            font-weight: 700;
+            color: #00d2ff;
+            text-transform: uppercase;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
+        }
+
+        .server-clearance {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 45, 85, 0.12);
+            border: 1px solid rgba(255, 45, 85, 0.45);
+            padding: 9px 22px;
+            border-radius: 4px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 20px rgba(255, 45, 85, 0.25);
+        }
+
+        .clearance-indicator {
+            width: 10px;
+            height: 10px;
+            background: #ff2d55;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff2d55;
+            animation: blinkRed 1.2s infinite;
+        }
+
+        .clearance-text {
+            font-size: 12px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: #ff5277;
+            text-transform: uppercase;
+        }
+
+        /* Center Welcome Section */
+        .center-welcome {
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: auto;
+            animation: zoomInFade 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .welcome-sub {
+            font-size: 15px;
+            letter-spacing: 11px;
+            color: #00d2ff;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 14px;
+            text-shadow: 0 0 16px rgba(0, 210, 255, 0.65);
+        }
+
+        .welcome-title {
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: 7px;
+            text-transform: uppercase;
+            color: #ffffff;
+            line-height: 1.1;
+            text-shadow: 0 4px 35px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 255, 255, 0.3);
+            margin-bottom: 16px;
+        }
+
+        .server-name {
+            display: inline-block;
+            background: linear-gradient(90deg, #00d2ff, #4facfe, #00f2fe, #00d2ff);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            animation: gradientShift 5s ease infinite;
+            text-shadow: 0 0 25px rgba(0, 210, 255, 0.4);
+        }
+
+        .motto {
+            margin-top: 18px;
+            font-size: 13px;
+            letter-spacing: 6px;
+            color: #9cb2c5;
+            text-transform: uppercase;
+        }
+
+        /* Object Dossier Card (Floating left above progress) */
+        .middle-info {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .dossier-card {
+            background: rgba(6, 14, 24, 0.82);
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            border-left: 4px solid #00d2ff;
+            border-radius: 4px;
+            padding: 14px 22px;
+            max-width: 580px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 210, 255, 0.15);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .dossier-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .dossier-class {
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: #e67e22;
+        }
+
+        .dossier-class.keter {
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+
+        .dossier-class.euclid {
+            background: #f39c12;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.4);
+        }
+
+        .dossier-class.mtf {
+            background: #2980b9;
+            box-shadow: 0 0 10px rgba(41, 128, 185, 0.5);
+        }
+
+        .dossier-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #00d2ff;
+            text-transform: uppercase;
+        }
+
+        .dossier-desc {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #c9d8e5;
+            letter-spacing: 0.8px;
+        }
+
+        /* Bottom Section / Progress */
+        .bottom-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .tip-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(8, 16, 26, 0.8);
+            border-left: 3px solid #00d2ff;
+            padding: 13px 22px;
+            border-radius: 0 6px 6px 0;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            min-height: 50px;
+        }
+
+        .tip-tag {
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: #00d2ff;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .tip-text {
+            font-size: 13px;
+            color: #d8e6f3;
+            letter-spacing: 1px;
+            transition: opacity 0.5s ease;
+        }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: #8da2b3;
+            text-transform: uppercase;
+        }
+
+        .progress-file {
+            color: #00d2ff;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(14, 24, 36, 0.85);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .progress-fill {
+            width: 15%;
+            height: 100%;
+            background: linear-gradient(90deg, #0072ff, #00d2ff, #4facfe);
+            border-radius: 4px;
+            box-shadow: 0 0 16px rgba(0, 210, 255, 0.8);
+            transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+            animation: shimmer 1.8s infinite;
+        }
+
+        /* Animations */
+        @keyframes pulseGlow {
+            0% { filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.4)); }
+            100% { filter: drop-shadow(0 0 20px rgba(0, 200, 255, 0.85)); }
+        }
+
+        @keyframes blinkRed {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes zoomInFade {
+            from { opacity: 0; transform: scale(0.93); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Slideshow -->
+    <div class="slideshow">
+        <div class="slide active" style="background-image: url('images/scp173.jpg');"></div>
+        <div class="slide" style="background-image: url('images/scp049.jpg');"></div>
+        <div class="slide" style="background-image: url('images/scp106.jpg');"></div>
+        <div class="slide" style="background-image: url('images/scpmtf.jpg');"></div>
+    </div>
+
+    <!-- Atmospheric Overlays -->
+    <div class="overlay-vignette"></div>
+    <div class="overlay-scanlines"></div>
+
+    <!-- UI Overlay -->
+    <div class="content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="foundation-badge">
+                <svg class="foundation-logo" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" stroke="#00d2ff" stroke-width="4" fill="none" opacity="0.8" />
+                    <circle cx="50" cy="50" r="34" stroke="#00d2ff" stroke-width="3" fill="none" opacity="0.6" />
+                    <circle cx="50" cy="50" r="22" stroke="#ffffff" stroke-width="3" fill="none" />
+                    <!-- Inward Arrows -->
+                    <path d="M 50 14 L 50 26 M 45 20 L 50 26 L 55 20" stroke="#00d2ff" stroke-width="3" fill="none" />
+                    <path d="M 19 68 L 29 62 M 22 59 L 29 62 L 28 70" stroke="#00d2ff" stroke-width="3" fill="none" />
+                    <path d="M 81 68 L 71 62 M 78 70 L 71 62 L 72 59" stroke="#00d2ff" stroke-width="3" fill="none" />
+                </svg>
+                <div class="foundation-meta">
+                    <h3>ФОНД SCP • ЗОНА-19</h3>
+                    <p>Secure • Contain • Protect</p>
+                </div>
+            </div>
+
+            <div class="header-tags">
+                <div class="map-badge" id="map-display">СЕКТОР: GM_SITE19</div>
+                <div class="server-clearance">
+                    <div class="clearance-indicator"></div>
+                    <div class="clearance-text">УРОВЕНЬ ДОПУСКА: 4 (СЕКРЕТНО)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Welcome Header -->
+        <div class="center-welcome">
+            <div class="welcome-sub">СИСТЕМА ИНИЦИАЛИЗАЦИИ БАЗЫ ДАННЫХ</div>
+            <h1 class="welcome-title">ДОБРО ПОЖАЛОВАТЬ НА СЕРВЕР</h1>
+            <div class="server-name" id="server-title">Dimas RP | SCP RP</div>
+            <div class="motto">ОБЕЗОПАСИТЬ • УДЕРЖАТЬ • СОХРАНИТЬ</div>
+        </div>
+
+        <!-- Middle Info / Active Dossier -->
+        <div class="middle-info">
+            <div class="dossier-card" id="dossier-card">
+                <div class="dossier-header">
+                    <span class="dossier-class euclid" id="dossier-class">ЕВКЛИД</span>
+                    <span class="dossier-title" id="dossier-title">SCP-173 — СКУЛЬПТУРА</span>
+                </div>
+                <div class="dossier-desc" id="dossier-desc">
+                    Анимация невозможна при прямом зрительном контакте. Моргайте по очереди при входе в камеру содержания.
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Status & Progress -->
+        <div class="bottom-section">
+            <div class="tip-box">
+                <div class="tip-tag">СОВЕТ ФОНДА:</div>
+                <div class="tip-text" id="tip-display">Всегда поддерживайте прямой зрительный контакт с SCP-173. Моргайте по очереди при входе в камеру содержания.</div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-file" id="status-text">Инициализация защищённого протокола связи...</span>
+                    <span id="percentage-text">15%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preload all slideshow images for instant transitions without flashes
+        const imageAssets = [
+            'images/scp173.jpg',
+            'images/scp049.jpg',
+            'images/scp106.jpg',
+            'images/scpmtf.jpg'
+        ];
+        imageAssets.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        // Slides data for dossiers
+        const dossiers = [
+            {
+                classType: 'euclid',
+                classLabel: 'ЕВКЛИД',
+                title: 'SCP-173 — СКУЛЬПТУРА',
+                desc: 'Анимация невозможна при прямом зрительном контакте. Моргайте по очереди при входе в камеру содержания.'
+            },
+            {
+                classType: 'euclid',
+                classLabel: 'ЕВКЛИД',
+                title: 'SCP-049 — ЧУМНОЙ ДОКТОР',
+                desc: 'Прикосновение смертельно для человека. Пытается провести «операцию» по излечению от Поветрия.'
+            },
+            {
+                classType: 'keter',
+                classLabel: 'КЕТЕР',
+                title: 'SCP-106 — СТАРИК',
+                desc: 'Способен разлагать любую материю и свободно перемещаться сквозь стены в карманное измерение.'
+            },
+            {
+                classType: 'mtf',
+                classLabel: 'СПЕЦОТРЯД',
+                title: 'МОГ ЭПСИЛОН-11 — ДЕВЯТИХВОСТАЯ ЛИСИЦА',
+                desc: 'Оперативно-тактическая группа специального назначения. Восстановление контроля над Зоной-19.'
+            }
+        ];
+
+        // Slideshow Animation Logic
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        const dossierCard = document.getElementById('dossier-card');
+        const dossierClass = document.getElementById('dossier-class');
+        const dossierTitle = document.getElementById('dossier-title');
+        const dossierDesc = document.getElementById('dossier-desc');
+
+        function updateDossier(index) {
+            dossierCard.style.opacity = '0';
+            dossierCard.style.transform = 'translateY(8px)';
+            setTimeout(() => {
+                const data = dossiers[index];
+                dossierClass.className = 'dossier-class ' + data.classType;
+                dossierClass.innerText = data.classLabel;
+                dossierTitle.innerText = data.title;
+                dossierDesc.innerText = data.desc;
+                dossierCard.style.opacity = '1';
+                dossierCard.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+            updateDossier(currentSlide);
+        }
+
+        setInterval(nextSlide, 6500);
+
+        // Lore Tips Rotator
+        const tips = [
+            "SCP-173: Всегда поддерживайте прямой зрительный контакт. Моргайте по очереди при входе в камеру содержания.",
+            "SCP-049: Не допускайте физического контакта с Чумным Доктором. Его прикосновение смертельно.",
+            "SCP-106: Старик способен проходить сквозь твердую материю и утягивать жертв в карманное измерение.",
+            "МОГ Эпсилон-11: Бойцы Девятихвостой Лисицы действуют в соответствии с протоколами чрезвычайных ситуаций.",
+            "Служба Безопасности: Защита научного персонала и контроль класса D является приоритетом №1.",
+            "Персонал Класса D: Неподчинение приказам сотрудников безопасности наказывается немедленной ликвидацией.",
+            "Карты Доступа: Не оставляйте свои ключ-карты без присмотра. Доступ в Зону ТЯЖ строго регламентирован."
+        ];
+
+        let currentTip = 0;
+        const tipDisplay = document.getElementById('tip-display');
+
+        setInterval(() => {
+            tipDisplay.style.opacity = '0';
+            setTimeout(() => {
+                currentTip = (currentTip + 1) % tips.length;
+                tipDisplay.innerText = tips[currentTip];
+                tipDisplay.style.opacity = '1';
+            }, 450);
+        }, 5000);
+
+        // Parse URL parameters if passed by GMod engine (%m, %s)
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mapParam = urlParams.get('mapname');
+            if (mapParam && mapParam.length > 0 && mapParam !== '%m') {
+                document.getElementById('map-display').innerText = "СЕКТОР: " + mapParam.toUpperCase();
+            }
+        } catch (e) {}
+
+        // Garry's Mod Engine Callbacks
+        let filesTotal = 100;
+        let filesNeeded = 85;
+
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            if (servername && servername.length > 0) {
+                document.getElementById('server-title').innerText = servername;
+            }
+            if (mapname && mapname.length > 0) {
+                document.getElementById('map-display').innerText = "СЕКТОР: " + mapname.toUpperCase();
+            }
+        }
+
+        function SetFilesTotal(total) {
+            filesTotal = Math.max(1, total);
+            updateProgress();
+        }
+
+        function SetFilesNeeded(needed) {
+            filesNeeded = needed;
+            updateProgress();
+        }
+
+        function DownloadingFile(fileName) {
+            document.getElementById('status-text').innerText = "Загрузка ресурса: " + fileName;
+            updateProgress();
+        }
+
+        function SetStatusChanged(status) {
+            document.getElementById('status-text').innerText = status;
+        }
+
+        function updateProgress() {
+            let percent = Math.round(((filesTotal - filesNeeded) / filesTotal) * 100);
+            percent = Math.min(100, Math.max(5, percent));
+            document.getElementById('progress-bar').style.width = percent + "%";
+            document.getElementById('percentage-text').innerText = percent + "%";
+        }
+
+        // Smooth simulated progress while waiting for engine events
+        let simPercent = 15;
+        const simInterval = setInterval(() => {
+            if (simPercent < 88) {
+                simPercent += Math.floor(Math.random() * 2) + 1;
+                document.getElementById('progress-bar').style.width = simPercent + "%";
+                document.getElementById('percentage-text').innerText = simPercent + "%";
+            } else {
+                clearInterval(simInterval);
+            }
+        }, 700);
+    </script>
+</body>
+</html>
